@@ -5,7 +5,7 @@ I found the code in `GdriveOcr.py` from [here](https://tanaikech.github.io/2017/
 
 # Usage
 1. First install the dependencies: `pip3 install -r requirements.txt`
-2. Get client credental (`.json`) file and place it in the project folder. Then change 2 variables in `GdriveOcr.py`. You'll know how to if you know what you are doing. ;-)
+2. Get client credental (`.json`) file (check the `Prerequisites` section [here](https://developers.google.com/drive/api/v3/quickstart/python#prerequisites)) and place it in the project folder. Then change 2 variables in `GdriveOcr.py`. You'll know how to if you know what you are doing. ;-)
 3. Run `python3 main.py` and follow the instructions. (You may need to run the `main.py` file twice for the first time)
 
 You may need to delete the later generated `drive-python-quickstart.json` file if you are trying with the same `refresh_token` after several days from your last run.
