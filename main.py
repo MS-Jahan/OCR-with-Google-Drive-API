@@ -2,12 +2,14 @@ from GdriveOcr import sendToGoogle
 import os
 import time
 import traceback
-
+from pathlib import Path
+from os.path import relpath
 
 ## Variables to customize
 keep_separate_copy_for_each_file = True             # If separate copy for each file is needed, make this variable True. Otherwise False.
 temp_output_file_name = "output.txt"                # Downloaded as output each time a photo is uploaded to Google.
 large_output_file_name = "TheLargeFile.txt"         # Where all outputs will be saved.
+img_file_extension = "png"                         # IMG file with same extension. dot (.) is prohibited
 time_to_sleep = 0                                   # Sleep after each submission to Google. Default is 0. Change if needed.
 temp_output_file_path = os.path.realpath(os.path.join(os.getcwd(), temp_output_file_name))
 large_output_file_path = os.path.realpath(os.path.join(os.getcwd(), large_output_file_name))
@@ -47,24 +49,33 @@ if keep_separate_copy_for_each_file == True:
 
 
 # Create list of image file in img folder
-imageFileList = os.listdir(imageFilesDir)
+##  = os.listdir(imageFilesDir)
+imageFileList = []
+for path in Path(imageFilesDir).rglob('*.' + img_file_extension):
+    imageFileList.append(path)
 
 # THE MAIN TASK
 print("### Starting OCR:\n\n")
 i = 0
 
-for imgfile in imageFileList:
+for imgfileDir in imageFileList:
+    
     # File sent to Google, output saved in output.txt and also in the large_output_file
-    imgfile_path = os.path.realpath(os.path.join(imageFilesDir, imgfile))
+    temp = str(imgfileDir).split("/")
+    imgfile = temp[len(temp)-1]
+    imgfile_path = os.path.realpath(os.path.join(imageFilesDir, imgfileDir))
     try:
         sendToGoogle(imgfile, imgfile_path, temp_output_file_path, large_output_file_name)
 
         # Keep separate copies if true
         if keep_separate_copy_for_each_file == True:
             separate_output_file_name = os.path.splitext(imgfile)[0] + ".txt"
-            separate_output_file_path = os.path.realpath(os.path.join(SeparateCopyDir, separate_output_file_name))
+            separate_output_file_dir = str(os.path.dirname(imgfileDir)).replace(imageFilesFolderName, SeparateCopyFolderName)
+            separate_output_file_path = os.path.join(separate_output_file_dir, separate_output_file_name)
+
+            os.makedirs(separate_output_file_dir, exist_ok=True)
             os.rename(temp_output_file_path, separate_output_file_path)
-        
+
         i += 1
         print(str(i) + ". " + imgfile + "  - DONE")
         time.sleep(time_to_sleep)
